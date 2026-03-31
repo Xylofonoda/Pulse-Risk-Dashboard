@@ -75,7 +75,7 @@ export const translations = {
     approved: 'Schváleno',
     declined: 'Odmítnuto',
     // Footer
-    footerText: '© 2026 Twisto Pulse · Přehled transakčního rizika',
+    footerText: '© 2026 Pulse · Přehled transakčního rizika',
     // Auto approve
     autoApproved: 'Automaticky schváleno',
     autoApprovedDesc: 'Transakce byla automaticky schválena (riziko < 50).',
@@ -155,7 +155,7 @@ export const translations = {
     approved: 'Zatwierdzone',
     declined: 'Odrzucone',
     // Footer
-    footerText: '© 2026 Twisto Pulse · Pulpit ryzyka transakcji',
+    footerText: '© 2026 Pulse · Pulpit ryzyka transakcji',
     // Auto approve
     autoApproved: 'Automatycznie zatwierdzone',
     autoApprovedDesc: 'Transakcja została automatycznie zatwierdzona (ryzyko < 50).',

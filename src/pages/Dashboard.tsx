@@ -50,7 +50,7 @@ export default function Dashboard() {
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
               <Activity className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold tracking-tight">Twisto Pulse</span>
+            <span className="font-bold tracking-tight">Pulse</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -165,7 +165,7 @@ export default function Dashboard() {
           <span>{t('footerText')}</span>
           <span className="flex items-center gap-1.5">
             <Activity className="h-3 w-3" />
-            Twisto Pulse
+            Pulse
           </span>
         </div>
       </footer>
