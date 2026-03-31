@@ -1,0 +1,37 @@
+
+insert into transactions (amount, currency, merchant_name, status, risk_score, user_id, risk_factors, created_at) values
+  (250.00,  'CZK', 'Amazon',           'pending', 0, '00000000-0000-0000-0000-000000000001', '{}', now() - interval '1 day'),
+  (4500.00, 'PLN', 'Unknown Merchant', 'pending', 0, '00000000-0000-0000-0000-000000000001', '{}', now() - interval '2 days'),
+  (89.99,   'CZK', 'Netflix',          'pending', 0, '00000000-0000-0000-0000-000000000002', '{}', now() - interval '1 day'),
+  (1200.00, 'PLN', 'Apple Store',      'pending', 0, '00000000-0000-0000-0000-000000000002', '{}', now() - interval '3 days'),
+  (9999.00, 'CZK', 'Crypto Exchange',  'pending', 0, '00000000-0000-0000-0000-000000000003', '{}', now() - interval '4 days'),
+  (35.00,   'PLN', 'Uber',             'pending', 0, '00000000-0000-0000-0000-000000000003', '{}', now() - interval '2 days'),
+  (750.00,  'CZK', 'Best Buy',         'pending', 0, gen_random_uuid(),                      '{}', now() - interval '5 days'),
+  (120.00,  'PLN', 'Airbnb',           'pending', 0, gen_random_uuid(),                      '{}', now() - interval '3 days'),
+  (320.00,  'CZK', 'Alza.cz',          'pending', 0, '00000000-0000-0000-0000-000000000001', '{}', now() - interval '6 days'),
+  (6800.00, 'PLN', 'FX Broker Online', 'pending', 0, gen_random_uuid(),                      '{}', now() - interval '1 day'),
+  (49.00,   'CZK', 'Spotify',          'pending', 0, '00000000-0000-0000-0000-000000000002', '{}', now() - interval '7 days'),
+  (2300.00, 'PLN', 'Zalando',          'pending', 0, gen_random_uuid(),                      '{}', now() - interval '2 days'),
+  (180.00,  'CZK', 'Bolt',             'pending', 0, '00000000-0000-0000-0000-000000000003', '{}', now() - interval '8 days'),
+  (5500.00, 'PLN', 'Mystery Shop',     'pending', 0, gen_random_uuid(),                      '{}', now() - interval '3 days'),
+  (95.00,   'CZK', 'Mall.cz',          'pending', 0, '00000000-0000-0000-0000-000000000001', '{}', now() - interval '9 days'),
+  (3200.00, 'PLN', 'Luxury Goods Ltd', 'pending', 0, gen_random_uuid(),                      '{}', now() - interval '4 days'),
+  (60.00,   'CZK', 'Rohlík.cz',        'pending', 0, '00000000-0000-0000-0000-000000000002', '{}', now() - interval '10 days'),
+  (1800.00, 'PLN', 'Booking.com',      'pending', 0, gen_random_uuid(),                      '{}', now() - interval '5 days'),
+  (430.00,  'CZK', 'H&M',              'pending', 0, '00000000-0000-0000-0000-000000000003', '{}', now() - interval '11 days'),
+  (7200.00, 'CZK', 'Offshore Pay',     'pending', 0, gen_random_uuid(),                      '{}', now() - interval '1 day'),
+  (210.00,  'PLN', 'IKEA',             'pending', 0, '00000000-0000-0000-0000-000000000001', '{}', now() - interval '12 days'),
+  (980.00,  'CZK', 'O2 Czech',         'pending', 0, gen_random_uuid(),                      '{}', now() - interval '6 days'),
+  (55.00,   'PLN', 'Wolt',             'pending', 0, '00000000-0000-0000-0000-000000000002', '{}', now() - interval '13 days'),
+  (4100.00, 'CZK', 'Bit Trading CZ',   'pending', 0, gen_random_uuid(),                      '{}', now() - interval '2 days'),
+  (145.00,  'PLN', 'Empik',            'pending', 0, '00000000-0000-0000-0000-000000000003', '{}', now() - interval '14 days'),
+  (2750.00, 'PLN', 'Auto Dealer PL',   'pending', 0, gen_random_uuid(),                      '{}', now() - interval '7 days'),
+  (75.00,   'CZK', 'DPD CZ',           'pending', 0, '00000000-0000-0000-0000-000000000001', '{}', now() - interval '15 days'),
+  (8800.00, 'CZK', 'Shadow Pay',       'pending', 0, gen_random_uuid(),                      '{}', now() - interval '3 days'),
+  (390.00,  'PLN', 'MediaMarkt',       'pending', 0, '00000000-0000-0000-0000-000000000002', '{}', now() - interval '16 days'),
+  (1650.00, 'CZK', 'Datart',           'pending', 0, gen_random_uuid(),                      '{}', now() - interval '8 days');
+
+insert into user_credit_limits (user_id, credit_limit, reason) values
+  ('00000000-0000-0000-0000-000000000001', 5000.00, 'Default limit'),
+  ('00000000-0000-0000-0000-000000000002', 10000.00, 'Premium account'),
+  ('00000000-0000-0000-0000-000000000003', 2500.00, 'New customer');
