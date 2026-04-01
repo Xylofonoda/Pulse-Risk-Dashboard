@@ -17,6 +17,7 @@ import {
   useResolveUserEmailsMutation,
   useBulkInsertTransactionsMutation,
   useGenerateRiskSummaryMutation,
+  useUpsertCreditLimitsMutation,
 } from '@/features/transactions/transactionsApi'
 import { useLocale } from '@/contexts/LocaleContext'
 
@@ -64,6 +65,7 @@ export default function UploadDialog({ open, onClose, onUploadComplete, initialF
   const [resolveEmails] = useResolveUserEmailsMutation()
   const [bulkInsert] = useBulkInsertTransactionsMutation()
   const [generateRiskSummary] = useGenerateRiskSummaryMutation()
+  const [upsertCreditLimits] = useUpsertCreditLimitsMutation()
 
   function reset() {
     setStep('drop')
@@ -198,7 +200,31 @@ export default function UploadDialog({ open, onClose, onUploadComplete, initialF
       return
     }
 
-    // 3. Build DB payloads — every email now resolves (auto-created if new)
+    // 3. If the CSV has a credit_limit column, upsert those limits now
+    const creditLimitColName = parsed.headers.find((h) =>
+      /credit.?limit|spending.?limit|user.?limit/i.test(h),
+    )
+    const identifierColName = Object.entries(allMappings).find(([, v]) => v === 'user_identifier')?.[0]
+    if (creditLimitColName && identifierColName) {
+      const emailToLimit: Record<string, number> = {}
+      for (const row of parsed.rows) {
+        const email = row[identifierColName]?.toLowerCase()
+        const limit = parseFloat(row[creditLimitColName])
+        if (email && !isNaN(limit) && limit > 0) emailToLimit[email] = limit
+      }
+      const limitUpserts = Object.entries(emailToLimit)
+        .map(([email, creditLimit]) => ({ userId: resolutions[email], creditLimit }))
+        .filter((x) => !!x.userId)
+      if (limitUpserts.length > 0) {
+        try {
+          await upsertCreditLimits(limitUpserts)
+        } catch {
+          // Non-fatal — credit limits are best-effort
+        }
+      }
+    }
+
+    // 4. Build DB payloads — every email now resolves (auto-created if new)
     const dbRows = validRows.map((r) => ({
       amount: parseFloat(r.sanitized.amount),
       currency: r.sanitized.currency.toUpperCase(),

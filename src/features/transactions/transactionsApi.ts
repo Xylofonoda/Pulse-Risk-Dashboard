@@ -131,6 +131,20 @@ export const transactionsApi = createApi({
       }),
       invalidatesTags: [{ type: 'Transaction', id: 'LIST' }],
     }),
+
+    upsertCreditLimits: builder.mutation<void, Array<{ userId: string; creditLimit: number }>>({
+      query: (limits) => ({
+        url: 'user_credit_limits',
+        method: 'POST',
+        headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+        body: limits.map(({ userId, creditLimit }) => ({
+          user_id: userId,
+          credit_limit: creditLimit,
+          updated_at: new Date().toISOString(),
+        })),
+      }),
+      invalidatesTags: [{ type: 'CreditLimit', id: 'LIST' }],
+    }),
   }),
 })
 
@@ -143,4 +157,5 @@ export const {
   useNormalizeHeadersMutation,
   useResolveUserEmailsMutation,
   useBulkInsertTransactionsMutation,
+  useUpsertCreditLimitsMutation,
 } = transactionsApi
