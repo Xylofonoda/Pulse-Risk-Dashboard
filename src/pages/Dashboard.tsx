@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Activity, Sun, Moon, BrainCircuit } from 'lucide-react'
+import { Activity, Sun, Moon, BrainCircuit, Upload } from 'lucide-react'
 import TransactionTable from '@/components/TransactionTable/TransactionTable'
 import ReviewQueue from '@/components/ReviewQueue/ReviewQueue'
 import RiskFactorModal from '@/components/RiskFactorModal/RiskFactorModal'
+import UploadDialog from '@/components/FileUpload/UploadDialog'
 import { useGetTransactionsQuery, useGenerateRiskSummaryMutation } from '@/features/transactions/transactionsApi'
 import { selectQueueCount, addManyToQueue } from '@/features/reviewQueue/reviewQueueSlice'
 import { useAppSelector, useAppDispatch } from '@/app/hooks'
@@ -13,6 +14,8 @@ export default function Dashboard() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
   const [isDark, setIsDark] = useState(false)
   const [analyzeProgress, setAnalyzeProgress] = useState<{ done: number; total: number } | null>(null)
+  const [uploadOpen, setUploadOpen] = useState(false)
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
   const queueCount = useAppSelector(selectQueueCount)
   const { data: transactions, refetch } = useGetTransactionsQuery()
   const [generateRiskSummary] = useGenerateRiskSummaryMutation()
@@ -25,17 +28,32 @@ export default function Dashboard() {
 
   const flaggedCount = transactions?.filter((tx) => tx.status === 'flagged').length ?? 0
   const riskyTransactions = transactions?.filter((tx) => tx.risk_score >= 70) ?? []
+  const hasTransactions = !!(transactions && transactions.length > 0)
+
+  function handleUploadFile(file: File) {
+    setPendingFile(file)
+    setUploadOpen(true)
+  }
 
   function enqueueAllRisky() {
     dispatch(addManyToQueue(riskyTransactions))
   }
 
-  async function analyzeAll() {
-    if (!transactions || analyzeProgress) return
-    setAnalyzeProgress({ done: 0, total: transactions.length })
-    for (let i = 0; i < transactions.length; i++) {
-      await generateRiskSummary(transactions[i].id)
-      setAnalyzeProgress({ done: i + 1, total: transactions.length })
+  async function analyzeAll(ids?: string[]) {
+    const targets = (ids ?? transactions?.map((tx) => tx.id) ?? [])
+      .filter((id) => {
+        const tx = transactions?.find((t) => t.id === id)
+        return !tx || tx.risk_score === 0
+      })
+    if (targets.length === 0 || analyzeProgress) return
+    const CONCURRENCY = 10
+    let done = 0
+    setAnalyzeProgress({ done: 0, total: targets.length })
+    for (let i = 0; i < targets.length; i += CONCURRENCY) {
+      const batch = targets.slice(i, i + CONCURRENCY)
+      await Promise.allSettled(batch.map((id) => generateRiskSummary(id)))
+      done += batch.length
+      setAnalyzeProgress({ done, total: targets.length })
     }
     setAnalyzeProgress(null)
     refetch()
@@ -87,6 +105,17 @@ export default function Dashboard() {
                 🇵🇱 PL
               </button>
             </div>
+            {/* Upload CSV/XLSX — only shown when there are transactions */}
+            {hasTransactions && (
+              <button
+                onClick={() => setUploadOpen(true)}
+                className="flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+                title={t('uploadButton')}
+              >
+                <Upload className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{t('uploadButton')}</span>
+              </button>
+            )}
             {/* Theme toggle */}
             <button
               onClick={() => setIsDark((d) => !d)}
@@ -140,13 +169,18 @@ export default function Dashboard() {
                 </button>
               </div>
             </div>
-            <TransactionTable onSelectTransaction={setSelectedTransaction} />
+            <TransactionTable
+              onSelectTransaction={setSelectedTransaction}
+              onUploadFile={handleUploadFile}
+            />
           </main>
 
           {/* Sidebar */}
           <div className="w-full lg:w-72 lg:shrink-0">
             <div className="lg:sticky lg:top-20 max-h-[60vh] lg:max-h-[60vh] overflow-hidden flex flex-col">
-              <ReviewQueue onSelectTransaction={setSelectedTransaction} />
+              <ReviewQueue
+                onSelectTransaction={setSelectedTransaction}
+              />
             </div>
           </div>
         </div>
@@ -157,6 +191,14 @@ export default function Dashboard() {
         transaction={selectedTransaction}
         open={selectedTransaction !== null}
         onClose={() => setSelectedTransaction(null)}
+      />
+
+      {/* Upload Dialog */}
+      <UploadDialog
+        open={uploadOpen}
+        onClose={() => { setUploadOpen(false); setPendingFile(null) }}
+        onUploadComplete={() => { setUploadOpen(false); setPendingFile(null); refetch() }}
+        initialFile={pendingFile}
       />
 
       {/* Footer */}

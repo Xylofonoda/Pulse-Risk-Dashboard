@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { Transaction, TransactionStatus, CreditLimitPayload } from '@/types/transaction'
+import type { TargetField } from '@/lib/csvSanitizer'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string
@@ -77,6 +78,59 @@ export const transactionsApi = createApi({
         { type: 'Transaction', id: 'LIST' },
       ],
     }),
+
+    normalizeHeaders: builder.mutation<
+      { mappings: Record<string, TargetField | null>; confidence: number },
+      { headers: string[] }
+    >({
+      query: (body) => ({
+        url: `${SUPABASE_URL}/functions/v1/normalize-csv-headers`,
+        method: 'POST',
+        body,
+        headers: {
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          apikey: SUPABASE_ANON_KEY,
+        },
+      }),
+    }),
+
+    resolveUserEmails: builder.mutation<
+      { resolutions: Record<string, string> },
+      { identifiers: string[] }
+    >({
+      query: (body) => ({
+        url: `${SUPABASE_URL}/functions/v1/resolve-user-emails`,
+        method: 'POST',
+        body,
+        headers: {
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          apikey: SUPABASE_ANON_KEY,
+        },
+      }),
+    }),
+
+    bulkInsertTransactions: builder.mutation<
+      { id: string }[],
+      Array<{
+        amount: number
+        currency: string
+        merchant_name: string
+        user_id: string
+        status: 'pending'
+        risk_score: 0
+        risk_factors: never[]
+      }>
+    >({
+      query: (rows) => ({
+        url: 'transactions',
+        method: 'POST',
+        headers: { Prefer: 'return=representation' },
+        body: rows,
+      }),
+      invalidatesTags: [{ type: 'Transaction', id: 'LIST' }],
+    }),
   }),
 })
 
@@ -86,4 +140,7 @@ export const {
   useUpdateCreditLimitMutation,
   useGenerateRiskSummaryMutation,
   useUpdateTransactionStatusMutation,
+  useNormalizeHeadersMutation,
+  useResolveUserEmailsMutation,
+  useBulkInsertTransactionsMutation,
 } = transactionsApi

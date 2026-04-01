@@ -35,3 +35,8 @@ insert into user_credit_limits (user_id, credit_limit, reason) values
   ('00000000-0000-0000-0000-000000000001', 5000.00, 'Default limit'),
   ('00000000-0000-0000-0000-000000000002', 10000.00, 'Premium account'),
   ('00000000-0000-0000-0000-000000000003', 2500.00, 'New customer');
+
+insert into profiles (user_id, email, display_name) values
+  ('00000000-0000-0000-0000-000000000001', 'alice@example.com', 'Alice Novak'),
+  ('00000000-0000-0000-0000-000000000002', 'bob@example.com', 'Bob Kowalski'),
+  ('00000000-0000-0000-0000-000000000003', 'carol@example.com', 'Carol Svoboda');

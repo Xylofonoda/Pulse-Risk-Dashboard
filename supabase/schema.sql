@@ -19,7 +19,17 @@ create table user_credit_limits (
 
 alter table transactions enable row level security;
 create policy "Allow anon read" on transactions for select using (true);
+create policy "Allow anon insert" on transactions for insert with check (true);
 create policy "Allow anon update" on transactions for update using (true);
 
 alter table user_credit_limits enable row level security;
 create policy "Allow anon all" on user_credit_limits for all using (true);
+
+create table profiles (
+  user_id uuid primary key,
+  email text unique not null,
+  display_name text
+);
+
+alter table profiles enable row level security;
+create policy "Allow anon read" on profiles for select using (true);

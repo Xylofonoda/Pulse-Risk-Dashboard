@@ -55,7 +55,9 @@ export default function ReviewQueue({ onSelectTransaction }: ReviewQueueProps) {
   }
 
   return (
-    <aside className="flex flex-col rounded-lg border bg-card min-h-0 flex-1">
+    <aside
+      className="flex flex-col rounded-lg border bg-card min-h-0 flex-1"
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
@@ -88,9 +90,7 @@ export default function ReviewQueue({ onSelectTransaction }: ReviewQueueProps) {
           <div className="flex flex-col items-center justify-center gap-2 py-12 text-center px-4">
             <ClipboardList className="h-8 w-8 text-muted-foreground/40" />
             <p className="text-sm text-muted-foreground">{t('noTransactionsQueued')}</p>
-            <p className="text-xs text-muted-foreground/60">
-              {t('clickAddToQueue')}
-            </p>
+            <p className="text-xs text-muted-foreground/60">{t('selectRowsToQueue')}</p>
           </div>
         ) : (
           <ul className="divide-y">
