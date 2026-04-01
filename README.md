@@ -1,4 +1,4 @@
-# Twisto Pulse — Transaction Risk Dashboard
+# Pulse — Transaction Risk Dashboard
 
 A real-time transaction risk management dashboard built for fraud analysts. Supports Czech and Polish locales with full currency formatting, AI-powered risk analysis via OpenAI, and a live review queue workflow.
 
